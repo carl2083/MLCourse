@@ -12,7 +12,7 @@ def gradientDescent (X, y , theta, alpha, num_iters):
     m = y.size
     for i in range (num_iters):
         ## code
-        theta = theta - alpha / m * np.sum(np.multiply((X.dot(theta)-y) , X[:,1][:,np.newaxis]))
+        theta = theta - alpha / m * (np.dot(X.T , (X.dot(theta)-y) ))
 
         J_history.append(computeCost(X,y,theta))
     return theta, J_history
@@ -36,7 +36,7 @@ iterations = 1600
 alpha = 0.01
 
 theta, J_history = gradientDescent(X, y , theta, alpha, iterations)
-
+print(theta)
 print(theta[0], theta[1])
 
 plt.scatter(X[:,1], y)

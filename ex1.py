@@ -44,3 +44,4 @@ plt.xlabel('Population of City in 10,000s')
 plt.ylabel('Profit in $10,000s')
 plt.plot(X[:,1], np.dot(X, theta))
 plt.show()
+

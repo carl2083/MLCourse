@@ -27,7 +27,7 @@ def gradient(theta,X, y,  lmbda):
     grad[0] = grad[0] - theta[0] * lmbda/m
     return grad
 
-ex3data1_path = r"C:\Users\chenc3\Desktop\ML\machine-learning-ex3\ex3\ex3data1.mat"
+ex3data1_path = r"C:\Users\carlc\Desktop\MLcourse\machine-learning-ex3\ex3\ex3data1.mat"
 
 data = loadmat(ex3data1_path)
 X = data['X']
@@ -69,9 +69,27 @@ def displayData(indices_to_display = None):
         icol += 1
     fig = plt.figure(figsize=(6,6))
     img = PIL.Image.fromarray(big_picture)
-    plt.show(img)
+    img.format = "PNG"
+    #img.show()
 
 displayData()
+
+def optimizeTheta(theta, X, y, lbda=0):
+    result = opt.fmin_cg(costFunction, fprime = gradient, x0 = theta, args = (X, y, lbda), maxiter = 50, disp = False, full_output= True)
+    return result[0], result[1]
+
+def buildTheta():
+    lbda = 0
+    initial_theta = np.zeros((X.shape[1],1)).reshape(-1)
+    Theta = np.zeros((10,X.shape[1]))
+    for i in range(10):
+        iclass = i if i else 10
+        print("Optimizing for number ", i )
+        logic_Y = np.array([1 if x == iclass else 0 for x in y])
+        itheta, imincost = optimizeTheta(initial_theta,X,logic_Y,lbda)
+        Theta[i,:]=itheta
+    return Theta
+Theta = buildTheta()
 """
 theta = np.zeros((k,n))
 for i in range (k):

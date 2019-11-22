@@ -27,7 +27,7 @@ def gradient(theta,X, y,  lmbda):
     grad[0] = grad[0] - theta[0] * lmbda/m
     return grad
 
-ex3data1_path = r"C:\Users\carlc\Desktop\MLcourse\machine-learning-ex3\ex3\ex3data1.mat"
+ex3data1_path = r"C:\Users\chenc3\Desktop\ML\machine-learning-ex3\ex3\ex3data1.mat"
 
 data = loadmat(ex3data1_path)
 X = data['X']
@@ -69,8 +69,7 @@ def displayData(indices_to_display = None):
         icol += 1
     fig = plt.figure(figsize=(6,6))
     img = PIL.Image.fromarray(big_picture)
-    img.format = "PNG"
-    #img.show()
+   # plt.show(img)
 
 displayData()
 
@@ -90,6 +89,31 @@ def buildTheta():
         Theta[i,:]=itheta
     return Theta
 Theta = buildTheta()
+
+
+def predictOneVsAll(myTheta, myrow):
+    classes = np.hstack((np.array(10) , np.arange(1,10)))
+    hypots = [0] * X.shape[0]
+    for i in range (10):
+        hypots[i] = sigmoid(myTheta[i] @ myrow)
+    return classes[np.argmax(np.array(hypots))]
+    # classes = [10] + range(1,10)
+    # hypots = [0] * len(classes)
+    # for i in range (len(classes)):
+    #     hypots[i] = sigmoid(myTheta @ myrow)
+    # return classes[np.argmax(np.array(hypots))]
+
+n_correct, n_total = 0. , 0.
+incorrect_indices = []
+for irow in range(X.shape[0]):
+    n_total += 1
+    if predictOneVsAll(Theta,X[irow]) == y[irow]:
+        n_correct += 1
+    else: incorrect_indices.append(irow)
+print("Accuracy : ", n_correct/n_total)
+
+
+
 """
 theta = np.zeros((k,n))
 for i in range (k):

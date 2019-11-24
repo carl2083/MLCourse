@@ -117,7 +117,9 @@ def backPropagate(mythetas_flattened, myX_flattened, myy, mylambda=0.):
     D2 = Delta2/float(m)
     D1[:,1:] = D1[:,1:] + (float(mylambda)/m)*mythetas[0][:,1:]
     D2[:,1:] = D2[:,1:] + (float(mylambda)/m)*mythetas[1][:,1:]
-    
+
     return flattenParams([D1,D2]).flatten()
 
 flattenedD1D2 = backPropagate(flattenParams(myThetas),flattenX(X),y,mylambda=0.)
+D1,D2 = reshapeParam(flattenedD1D2)
+

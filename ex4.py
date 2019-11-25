@@ -1,19 +1,20 @@
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import scipy.io
 import scipy
 import itertools
+import pandas as pd
 
 
-datafile = r"C:\Users\carlc\Desktop\MLcourse\machine-learning-ex4\machine-learning-ex4\ex4\ex4data1.mat"
+datafile = r"C:\Users\chenc3\Desktop\ML\machine-learning-ex4\ex4\ex4data1.mat"
 mat = scipy.io.loadmat(datafile)
 X, y = mat['X'], mat['y']
 X = np.insert(X,0,1,axis=1)
 print(X.shape, y.shape)
 
-thetafile = r"C:\Users\carlc\Desktop\MLcourse\machine-learning-ex4\machine-learning-ex4\ex4\ex4weights.mat"
-mat = scipy.io.loadmat(thetafile)
-Theta1, Theta2 = mat['Theta1'], mat['Theta2']
+thetafile = r"C:\Users\chenc3\Desktop\ML\machine-learning-ex4\ex4\ex4weights.mat"
+mat1 = scipy.io.loadmat(thetafile)
+Theta1, Theta2 = mat1['Theta1'], mat1['Theta2']
 print(Theta1.shape, Theta2.shape)
 
 input_layer_size = 400
@@ -46,13 +47,30 @@ def propagateForward(row, Thetas):
     zs_as_per_layer = []
     for i in range (len(Thetas)):
         Theta = Thetas[i]
-        z = (Theta @ features).reshape((Theta.shape[0],1))
+        z = (Theta @ features).reshape((Theta.shape[0],1)) #Reshape neccesary?
         a = sigmoid(z)
-        zs_as_per_layer.append(((z,a)))
+        zs_as_per_layer.append((z,a))
         if i == len(Thetas) - 1:
             return np.array(zs_as_per_layer)
         a = np.insert(a,0,1)
         features = a
+
+def computeCostAlt (thetas, X, y_mat, mylambda=0.):
+    m = X.shape[0]
+    temp = X
+    reg = 0
+    for i in range(len(thetas)):
+        temp = temp @ thetas[i].T
+        temp = sigmoid(temp)
+        if i == len(thetas)-1:
+            break
+        temp = np.insert(temp,0,1,axis=1)
+        reg += mylambda/(2*m) * np.sum(np.square(thetas[i][:,1:]))
+    J = (1/m) * np.sum((-1 * np.log(temp) * y_mat - np.log(1-temp) * (1- y_mat))) + reg
+    return J
+Thetas = [Theta1, Theta2]
+y_mat = pd.get_dummies(y.ravel()).values
+print(computeCostAlt(Thetas,X,y,mylambda = 0.0))
 
 
 def computeCost (mythetas_flattened, myX_flattened, myy, mylabda=0):
@@ -84,7 +102,7 @@ def sigmoidGradient(z):
     dummy = sigmoid(z)
     return dummy * (1-dummy)
 
-def genRandThetas:
+def genRandThetas():
     epsilon_init = 0.12
     theta1_shape = (hidden_layer_size, input_layer_size + 1)
     theta2_shape = (output_layer_size, hidden_layer_size + 1)
@@ -100,9 +118,9 @@ def backPropagate(mythetas_flattened, myX_flattened, myy, mylambda=0.):
     m = n_training_samples
     for irow in range(m):
         myrow = myX[irow]
-        a1 = myrow.reshape((input_layer_size,1))
+        a1 = myrow.reshape((input_layer_size+1,1))
         temp = propagateForward(myrow, mythetas)
-        t2 = temp[0][0]
+        z2 = temp[0][0]
         a2 = temp[0][1]
         z3 = temp[1][0]
         a3 = temp[1][1]
@@ -123,3 +141,15 @@ def backPropagate(mythetas_flattened, myX_flattened, myy, mylambda=0.):
 flattenedD1D2 = backPropagate(flattenParams(myThetas),flattenX(X),y,mylambda=0.)
 D1,D2 = reshapeParam(flattenedD1D2)
 
+
+# train thetas
+# def trainNN(mylambda=0.):
+#     """
+#     Function that generates random initial theta matrices, optimizes them,
+#     and returns a list of two re-shaped theta matrices
+#     """
+#
+#     randomThetas_unrolled = flattenParams(genRandThetas())
+#     result = scipy.optimize.fmin_cg(computeCost, x0=randomThetas_unrolled, fprime=backPropagate, \
+#                                args=(flattenX(X),y,mylambda),maxiter=50,disp=True,full_output=True)
+#     return reshapeParams(result[0])
